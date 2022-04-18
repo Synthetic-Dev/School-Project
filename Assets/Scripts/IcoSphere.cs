@@ -61,7 +61,6 @@ public static class IcoSphere
         Vector3[] vertices = gameObject.GetComponent<MeshFilter>().mesh.vertices;
         List<Vector3> vertList = new List<Vector3>();
         Dictionary<long, int> middlePointIndexCache = new Dictionary<long, int>();
-        int index = 0;
 
         int recursionLevel = 3;
         float radius = 1f;
@@ -146,18 +145,27 @@ public static class IcoSphere
             triList.Add(faces[i].v3);
         }
         mesh.triangles = triList.ToArray();
-        mesh.uv = new Vector2[vertices.Length];
 
-        Vector3[] normales = new Vector3[vertList.Count];
-        for (int i = 0; i < normales.Length; i++)
-            normales[i] = vertList[i].normalized;
+        Vector2[] uv = new Vector2[vertList.Count];
+        for(var i= 0; i < vertList.Count; i++){
+            var unitVector = vertList[i].normalized;
+            Vector2 ISOuv = new Vector2(0, 0);
+            ISOuv.x = (Mathf.Atan2(unitVector.x, unitVector.z) + Mathf.PI) / Mathf.PI / 2;
+            ISOuv.y = (Mathf.Acos(unitVector.y) + Mathf.PI) / Mathf.PI - 1;
+            uv[i] = new Vector2(ISOuv.x, ISOuv.y);
+        }
+        mesh.uv = uv;
+
+        Vector3[] normals = new Vector3[vertList.Count];
+        for (int i = 0; i < normals.Length; i++)
+            normals[i] = vertList[i].normalized;
 
 
-        mesh.normals = normales;
+        mesh.normals = normals;
 
-        mesh.RecalculateBounds();
         mesh.RecalculateTangents();
         mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
         //mesh.Optimize();
     }
 }
