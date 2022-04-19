@@ -1,8 +1,7 @@
 using System;
-using UnityEngine;
 
-public static class Calculations
-{
+public static class Calculations {
+    // Clamp the value of a double
     public static double Clamp(double value, double min, double max)
     {
         return Math.Max(min, Math.Min(max, value));
@@ -59,33 +58,51 @@ public static class Calculations
         double m = Mass.ToKgFromSolarMass(solarMass);
         double distance = Distance.ToMFromUnity(unity);
 
-        double a = (Constants.gravitationalConstant * m) / (distance * distance);
-        return a * Math.Sqrt(Constants.solarScale / Constants.solarRadiiToM);
+        double acceleration = (Constants.gravitationalConstant * m) / (distance * distance);
+        return acceleration * Math.Sqrt(Constants.solarScale / Constants.solarRadiiToM);
     }
 
     public static class Orbits {
+        // Gets the orbital velocity of an object give 2 masses and the distance between them
         public static double GetVelocity(double solarMass, double solarmass, double solarRadii) {
+            // Convert the parameters to their SI units
             double M = Mass.ToKgFromSolarMass(solarMass);
             double m = Mass.ToKgFromSolarMass(solarmass);
             double radius = Distance.ToMFromSolarRadii(solarRadii);
 
+            // Calculate velocity of object
             double sqrVelocity = Constants.gravitationalConstant * (M + m) / (2 * radius);
             double velocity = Math.Sqrt(sqrVelocity);
-            velocity *= (Constants.solarScale / Constants.solarRadiiToM);
 
-            return velocity;
+            // Convert the distance aspect of the velocity back to the original unit
+            return velocity * (Constants.solarScale / Constants.solarRadiiToM);
         } 
 
+        // Gets the orbital velocity of an object give its orbital period and orbit radius
         public static double GetVelocity(double period, double solarRadii) {
+            // Convert to SI units
             double radius = Distance.ToMFromSolarRadii(solarRadii);
 
+            // Calculate velocity from period
             double velocity = (2 * Math.PI * radius) / period;
 
-            return velocity * Constants.solarScale / Constants.solarRadiiToM;
+            // Convert the distance aspect of the velocity back to the original unit
+            return velocity * (Constants.solarScale / Constants.solarRadiiToM);
+        }
+
+        // Gets the orbital period between 2 masses
+        public static double GetPeriod(double solarMass, double solarmass, double solarRadii) {
+            // Convert to SI units
+            double M = Mass.ToKgFromSolarMass(solarMass);
+            double m = Mass.ToKgFromSolarMass(solarmass);
+            double radius = Distance.ToMFromSolarRadii(solarRadii);
+
+            // Calculate the orbital period between the 2 masses in seconds
+            return 2 * Math.PI * Math.Sqrt((radius * radius * radius) / (Constants.gravitationalConstant * (M + m)));
         }
     }
 
-    public static class Period {
+    public static class Time {
         public static double ToYearsFromSeconds(double seconds) {
             return seconds / (365.25 * 24 * 60 * 60);
         }
@@ -103,14 +120,6 @@ public static class Calculations
                 return (weeks, "weeks");
             }
             return (ToYearsFromSeconds(seconds), "years");
-        }
-
-        public static double GetPeriod(double solarMass, double solarmass, double solarRadii) {
-            double M = Mass.ToKgFromSolarMass(solarMass);
-            double m = Mass.ToKgFromSolarMass(solarmass);
-            double radius = Distance.ToMFromSolarRadii(solarRadii);
-
-            return 2 * Math.PI * Math.Sqrt((radius * radius * radius) / (Constants.gravitationalConstant * (M + m)));
         }
     }
 }

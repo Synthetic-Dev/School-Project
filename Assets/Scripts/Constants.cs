@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public static class Constants {
     public const double gravitationalConstant = 6.6743e-11;
 
