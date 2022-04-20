@@ -61,4 +61,10 @@ public abstract class AbstractBody : MonoBehaviour {
         dict.Add("Type", bodyType.ToString());
         return dict;
     }
+
+    private void OnMouseDown() {
+        GameObject interfaceObj = GameObject.Find("Interface");
+        HUD hud = interfaceObj.GetComponent<HUD>();
+        hud.Inspect(GetInfo());
+    }
 }

@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SystemGenerator {
     public int generatorSeed;
+    public bool hasPlanets;
 
-    public SystemGenerator(int seed) {
+    public SystemGenerator(int seed, bool planets) {
         generatorSeed = seed;
+        hasPlanets = planets;
     }
 
     private GameObject CreateStar(float seed) {
@@ -107,7 +110,7 @@ public class SystemGenerator {
 
         // A trail used to visualize the motion of the object
         Material trailMaterial = new Material(Shader.Find("Unlit/Color"));
-        trailMaterial.color = material.color;
+        trailMaterial.color = Color.white;
         TrailRenderer trail = body.AddComponent<TrailRenderer>();
         trail.time = 60;
         trail.widthCurve = new AnimationCurve(
@@ -122,7 +125,9 @@ public class SystemGenerator {
         return body;
     }
 
-    public void Generate() {
+    public List<GameObject> Generate() {
+        List<GameObject> objects = new List<GameObject>();
+
         // Create a new PRNG object using the simulation's seed and generate the value for the primary star
         float primarySeed = (new PRNG(generatorSeed)).Value();
 
@@ -137,6 +142,8 @@ public class SystemGenerator {
         // Create a new game object for the primary star and get the Star component
         GameObject primaryStarObject = CreateStar(primarySeed);
         Star primaryStar = primaryStarObject.GetComponent<Star>();
+
+        objects.Add(primaryStarObject);
 
         // Initialize variables to be used when generating planets
         double maxPlanetDistance = primaryStar.GetRadius() * 10000;
@@ -159,6 +166,8 @@ public class SystemGenerator {
             // Create another game object for the second star and get its Star component
             GameObject secondaryStarObject = CreateStar(secondarySeed);
             Star secondaryStar = secondaryStarObject.GetComponent<Star>();
+
+            objects.Add(secondaryStarObject);
 
             // Set the central mass of the system to be the sum of both of the star's masses
             centralMass = primaryStar.GetMass() + secondaryStar.GetMass();
@@ -196,6 +205,10 @@ public class SystemGenerator {
             previousPlanetDistance = 10 * primaryStar.GetRadius();
         }
 
+        if (!hasPlanets) {
+            return objects;
+        }
+
         int planetIndex = 0;
         while (true) {
             planetIndex++;
@@ -212,6 +225,8 @@ public class SystemGenerator {
             GameObject planetObject = CreatePlanet(planetSeed, (float)planetDistance);
             Planet planet = planetObject.GetComponent<Planet>();
 
+            objects.Add(planetObject);
+
             double orbitCentralMass = (centralMass + planet.GetMass());
             double distanceToCM = (centralMass * planetDistance) / orbitCentralMass;
 
@@ -226,5 +241,7 @@ public class SystemGenerator {
             planet.SetPosition(Vector3.right * (float)(planetDistance * Constants.solarScale));
             planet.SetVelocity(Vector3.back * (float)(velocity * Constants.solarScale));
         }
+
+        return objects;
     }
 }

@@ -67,9 +67,9 @@ public class Star : AbstractBody {
     public override Dictionary<string, string> GetInfo() {
         // Call the super class' method so that the dictionary includes the default information
         Dictionary<string, string> dict = base.GetInfo();
-        dict.Add("Mass", GetMass().ToString() + " Suns");
-        dict.Add("Radius", GetRadius().ToString() + " Solar Radii");
-        dict.Add("Luminosity", GetLuminosity().ToString() + " Solar Luminosity");
+        dict.Add("Mass", string.Format("{0:F2} Suns", GetMass()));
+        dict.Add("Radius", string.Format("{0:F2} SR", GetRadius()));
+        dict.Add("Luminosity", string.Format("{0:F4} SL", GetLuminosity()));
         return dict;
     }
 }

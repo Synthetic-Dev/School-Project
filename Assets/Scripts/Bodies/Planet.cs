@@ -58,9 +58,9 @@ public class Planet : AbstractBody {
 
         // material.EnableKeyword("_SPECULAR_COLOR");
 
-        material.EnableKeyword("_EMISSION");
-        Color emissionColor = color;
-        material.SetColor("_EmissionColor", emissionColor);
+        // material.EnableKeyword("_EMISSION");
+        // Color emissionColor = color;
+        // material.SetColor("_EmissionColor", emissionColor);
 
         return material;
     }
